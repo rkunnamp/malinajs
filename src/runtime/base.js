@@ -163,8 +163,8 @@ export const callComponentDyn = (component, context, option = {}, propFn, cmp, s
       $component.$push?.(value);
       $component.$apply?.();
     }, { value: {}, idle: true, cmp });
-    fire(parentWatch);
-    option.props = parentWatch.value;
+    
+    option.props = fire(parentWatch);;
   }
 
   if(classFn) {
@@ -182,6 +182,8 @@ export const callComponentDyn = (component, context, option = {}, propFn, cmp, s
       $component.$push(parentWatch.fn());
       $component.$apply();
     });
+    //why is parentWatch,value assigned here
+    //instead assign an empty value and call fire(w)
     Object.assign(w, { idle: true, cmp, value: parentWatch.value });
     $component.$cd.watchers.push(w);
   }

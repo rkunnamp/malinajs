@@ -142,14 +142,13 @@
 
 
   const fire = w => {
-    if(w.cmp) {
-      w.cmp(w, w.fn())
-    }
+    let value = w.fn();
+    if(w.cmp) w.cmp(w, value);
     else {
-      console.log("w.cmp is not defined")
-      w.value = w.fn();
+      w.value = value;
       w.cb(w.value);
     }
+    return value;
   };
 
   function $digest($cd, flag) {
@@ -284,22 +283,11 @@
 
     if(propFn) {
       parentWatch = $watch(propFn, value => {
-        console.log("calling  callback  of the incoming props watcher of child")
-        console.log("new incoming props to child ", value)
-        console.log("is incoming props childArray same as parentArray" , value['childArray']===window.parentArray)
-        //if ($component.$push) {console.log("calling child component.push")}
         $component.$push?.(value);
-        if ($component.apply) {console.log("calling child component.apply")}
         $component.$apply?.();
-        console.log("** is incoming props watcher current value childArray same as parentArray" , window.incomingPropsWatcher.value['childArray']===window.parentArray)
       }, { value: {}, idle: true, cmp });
-      console.log("firing incoming props watcher")
-      fire(parentWatch);
-      window.incomingPropsWatcher = parentWatch
-      console.log("incoming props watcher current value", parentWatch.value)
-      console.log("is incoming props watcher current value childArray same as parentArray" , parentWatch.value['childArray']===window.parentArray)
-      option.props = propFn();
-    }
+      
+      option.props = fire(parentWatch);  }
 
     if(classFn) {
       fire($watch(classFn, value => {
@@ -311,16 +299,14 @@
     $component = callComponent(component, context, option);
     if(setter && $component?.$exportedProps) {
       let parentCD = current_cd, w = new WatchObject($component.$exportedProps, value => {
-        console.log("calling exported props watcher callback", JSON.stringify(value))
-        setter(value);//this sets the parentArray in parent to childArray
-        console.log("parent apply called")
+        setter(value);
         cd_component(parentCD).$apply();
-        $component.$push(parentWatch.fn()); //this sets the childArray in child to the incoming props
-        console.log("child apply called")
+        $component.$push(parentWatch.fn());
         $component.$apply();
       });
-      Object.assign(w, { idle: true, cmp, value: {} });
-      fire(w)
+      //why is parentWatch,value assigned here
+      //instead assign an empty value and call fire(w)
+      Object.assign(w, { idle: true, cmp, value: parentWatch.value });
       $component.$cd.watchers.push(w);
     }
 
@@ -400,31 +386,14 @@
     const $$apply = makeApply();
     let $props = $option.props || {};
     let {childArray} = $props;
-
-
-    console.log("is childArray same as parentArray in child init" , childArray===window.parentArray)
-    //console.log("childArray while child init - ", JSON.stringify(childArray));
-    current_component.$push = ($$props) => {
-      console.log("setting childArray of child using incoming props");
-      $props = $$props;
-      if ($$props.hasOwnProperty('childArray')) {
-          childArray = $$props.childArray;
-      }
-    };
-    current_component.$exportedProps = () => {
-        //console.log("$exportedProps called. returning {childArray: ", JSON.stringify(childArray), "}")
-        console.log("exporting childArray from child")
-        return {
-            childArray: childArray
-        }
-    };
+    current_component.$push = ($$props) => ({childArray=childArray} = $props = $$props);
+    current_component.$exportedProps = () => ({childArray});
     let count = 0;
     function addToArray() {
-      $$apply();      
+      $$apply();
+      console.log(childArray === window.parentArray);
       childArray.push(count++);
       console.log("childArray now- ", JSON.stringify(childArray));
-      console.log("is childArray same as parentArray" , childArray===window.parentArray)
-
     }
     {
       const $parentElement = htmlToFragment(`<button> Add to array inside child </button><h3> </h3>`, 1);
@@ -455,22 +424,15 @@
       bindText(el1, () => `parentArray ${JSON.stringify(parentArray)}`);
       addBlock($parentElement, callComponentDyn(Child, $context$1, {},
 
-        () => {
-          //console.log("propFn called");
-          //console.log("in propFn is the parentArray passed is window.parentArray" , window.parentArray===parentArray);
-          return({childArray: parentArray})
-        },
+        () => ({childArray: parentArray}),
 
         compareDeep,
 
-        ($$_value) => {
-          console.log("parent setter called")
-          return ({childArray: parentArray = parentArray} = $$_value)
-        }
+        ($$_value) => ({childArray: parentArray = parentArray} = $$_value)
       ));
       return $parentElement;
     }
-option.props  });
+  });
 
   mount(document.body, App);
 
