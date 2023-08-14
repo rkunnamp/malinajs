@@ -12,7 +12,10 @@
     "test": "NODE_PATH=.. node ./node_modules/.bin/mocha ./test/run.js",
     "test-debug": "NODE_PATH=.. node --inspect-brk ./node_modules/.bin/mocha ./test/run.js",
     "brotli": "brotli --input /app/malinajs/example/public/app.min.js --output /app/malinajs/example/public/app.min.js.br; brotli --input /app/malinajs/example/public/app.min2.js --output /app/malinajs/example/public/app.min2.js.br",
-    "fix": "npx standardx --fix ./src/"
+    "fix": "npx standardx --fix ./src/",
+    "watch_app": "NODE_PATH=.. rollup -c rollup.config.app.js -w",
+    "live": "live-server ./example/public --watch=./example/public",
+    "dev": "concurrently \"npm run watch_app\" \"npm run live\""
   },
   "dependencies": {
     "acorn": "^8.7.1",
@@ -23,14 +26,16 @@
     "@rollup/plugin-commonjs": "^13.0.2",
     "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
+    "concurrently": "^8.2.0",
     "http-server": "^0.12.3",
     "jsdom": "^16.4.0",
+    "live-server": "^1.2.2",
     "mocha": "^8.2.1",
     "rollup": "^2.17.1",
     "rollup-plugin-css-only": "^3.1.0",
+    "standardx": "^7.0.0",
     "terser": "^5.4.0",
-    "uglify-js": "^3.13.7",
-    "standardx": "^7.0.0"
+    "uglify-js": "^3.13.7"
   },
   "main": "malina",
   "files": [
