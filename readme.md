@@ -65,13 +65,13 @@ mount(document.body, App);
 
 ## The core logic
 
-Each component has a change detector attached
-A change detector has an array of watchers , and a digest function 
-The watcher objects has 
-  a)fn (a function that returns the value of the object that is being watched)
-  b)cb (a callback that is executed when the value of the object changes)
-  c)value (the last known values of the object that is being watched)
-  d)an optional comparator function that can be used for comparing two values and see if a change has happened
+Each component has a change detector attached.\
+A change detector has an array of watchers , and a digest function.\
+The watcher objects has\
+  a)fn (a function that returns the value of the object that is being watched)\
+  b)cb (a callback that is executed when the value of the object changes)\
+  c)value (the last known values of the object that is being watched)\
+  d)an optional comparator function that can be used for comparing two values and see if a change has happened\
 
 The digest function takes each watcher object ,  runs the fn function to get the current value of the object that is being watched, and compares it with the value stored in the watcher. If the value has changed, watcher value is changed to the new value and callback is called with the new value as the param to the callback .
 
@@ -85,13 +85,13 @@ Whenever javascript vraiables that holds a reference (as in the case of arrays o
 
 ---
 
-All functions declared in the script tag gets added with a $$apply function automatically by the malinajs compiler.
-The $$apply function schedules the execution of digest function.
-(This can be avoided by adding the following flag
-'''js
+All functions declared in the script tag gets added with a $$apply function automatically by the malinajs compiler.\
+The $$apply function schedules the execution of digest function.\
+(This can be avoided by adding the following flag)
+```js
 // !no-check 
-'''
-In short, all functions check for changes to the observed objects.
+```
+In short, all functions check for changes to the observed objects.\
 So adding  //!no-check  is necessary for side effect free functions to save some computation.
 
 
@@ -116,12 +116,12 @@ inputElement.addEventListener('input', (event) => {
 
 ```
 
-User types into inputElement.
-The input event listener updates the name variable.
-$apply() is called to trigger the change detection cycle.
-$digest runs, looping through the watchers.
-It detects that name has changed.
-The callback provided to $watch runs, updating the labelElement's text.
+User types into inputElement.\
+The input event listener updates the name variable.\
+$apply() is called to trigger the change detection cycle.\
+$digest runs, looping through the watchers.\
+It detects that name has changed.\
+The callback provided to $watch runs, updating the labelElement's text.\
 
 ---
 
@@ -133,13 +133,13 @@ The callback provided to $watch runs, updating the labelElement's text.
 ---
 
 2 way binding of variables between a parent and child component is ensured by the way of creation of 2 watcher objects in the child.
-One watcher object watches for the changes to the incoming props, and the other watches for changes to the exported props.
+One watcher object watches for the changes to the incoming props, and the other watches for changes to the exported props.\
 
-In the malinajs code propFn is the name of the function that returns the incoming properties.
+In the malinajs code propFn is the name of the function that returns the incoming properties.\
 current_componen.$push is the name of the function that sets the child variables using the incoming properties returned by propFn
 
-current_component.$exportedProps is the name of the function that returns the exported properties
-setter is the name of the function that sets the parent variables using the exported properties
+current_component.$exportedProps is the name of the function that returns the exported properties.\
+setter is the name of the function that sets the parent variables using the exported properties.
 
 A propFn looks like
 ```js
@@ -166,17 +166,19 @@ prpFn and setter functions are passed as arguments from the parent component to 
 
 Code explanation
 
-makeComponent accepts an init function as argument 
-it calls the init function
-init function returns an html element
-it assigns the html element to $component.dom
+
+makeComponent accepts an init function as argument\
+it calls the init function\
+init function returns an html element\
+it assigns the html element to $component.dom\
 and returns the $component object
 
 
-init function sets up the change detector for the component
-it generates the html element corresponding to the template of the components
-it sets up event listeners
-it sets up child components
+
+init function sets up the change detector for the component\
+it generates the html element corresponding to the template of the components\
+it sets up event listeners\
+it sets up child components\
 and it finally returns the html element
 
 
