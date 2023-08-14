@@ -1,0 +1,19 @@
+<script>
+  import Child from "./Child.xht"
+  let parentArray = []
+  let id = 10
+  function insertToParent() {
+    parentArray.push(id++)
+    console.log("parentArray now- ", JSON.stringify(parentArray))
+  }
+  parentArray.push(101)
+
+  window.parentArray = parentArray;
+  console.log("hhh")
+</script>
+<button @click={insertToParent}> Add to array inside parent </button>
+<h3>parentArray {JSON.stringify(parentArray)}</h3>
+<br>
+<br>
+<Child bind:childArray|deep={parentArray} />
+

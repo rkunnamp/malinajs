@@ -1,0 +1,79 @@
+<script>
+  import Selectize from "./Selectize.xht"
+  let selectedCountries = []
+  let selectedCurrencies = []
+  let values = []
+  let config=  {}
+
+  let countries  = 
+    [
+        { value: 'india', text: 'India' },
+        { value: 'pakistan', text: 'Pakistan' },
+        { value: 'china', text: 'China' },
+        { value: 'srilanka', text: 'Srilanka' }
+    ];
+
+  let currencies = 
+    [
+        { value: 'inr', text: 'INR' },
+        { value: 'pkr', text: 'PKR' },
+        { value: 'yuvan', text: 'Yuvan' },
+        { value: 'slr', text: 'Srilankan Rupee' }
+    ];
+
+
+  let currencyMap = {
+    "india" : "inr",
+    "pakistan"  : "pkr",
+    "china" : "yuvan",
+    "srilanka" : "slr"
+  }
+
+
+  let countryMap = {}
+
+  _.each(currencyMap, function(val, key) {
+    console.log("key", key)
+    console.log("val", val)
+    countryMap[val] = key;
+  }, countryMap);
+
+  console.log("countryMap", countryMap)
+
+
+  $: JSON.stringify(selectedCountries), onChangeCountry
+  $: JSON.stringify(selectedCurrencies), onChangeCurrency
+
+
+
+  function onChangeCountry(){
+    console.log("in onChangeCountry")
+    selectedCurrencies.length = 0
+    selectedCountries.forEach((country)=>{
+      selectedCurrencies.push(currencyMap[country])
+    })
+  }
+
+
+  function onChangeCurrency(){
+    console.log("in onChangeCurrency")
+    selectedCountries.length = 0
+    selectedCurrencies.forEach((currency)=>{
+      selectedCountries.push(countryMap[currency])
+    })
+  }
+
+
+</script>
+
+
+
+
+<Selectize bind:values|deep={selectedCountries}  bind:options|deep={countries} config|deep={config} />
+<Selectize bind:values|deep={selectedCurrencies} bind:options|deep={currencies} config|deep={config} />
+
+
+<div> Selected countries  {JSON.stringify(selectedCountries)} </div>
+<div> Selected currencies  {JSON.stringify(selectedCurrencies)} </div>
+
+

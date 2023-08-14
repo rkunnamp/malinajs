@@ -1,0 +1,19 @@
+<script>
+  import Selectize from "./Selectize.xht"
+
+  let config=  {}
+  let options = [
+        { value: '1a', text: 'Option 1a' },
+        { value: '2a', text: 'Option 2a' },
+        { value: '3b', text: 'Option 3b' },
+        { value: '4b', text: 'Option 4b' }
+    ];
+  let values = ["1a","5b"];
+
+</script>
+
+
+<Selectize :values|deep :options|deep config|deep={config} />
+
+<div> Selected values {JSON.stringify(values)} </div>
+

@@ -1,0 +1,96 @@
+<script>
+  import Selectize from "./Selectize.xht"
+  let values = []
+  let options = []
+  let count = 5
+
+  let values1 = []
+  let options1 = []
+
+  let config = {
+  }
+
+
+  function onBtnClick() {
+      options1.push({ value: "1a", text: 'Option 1a' })
+      options1.push({ value: "2a", text: 'Option 2a' })
+      options1.push({ value: "3a", text: 'Option 3a' })
+      values1.push("1a")
+      values1.push("3a")
+      values1.push("4a")
+  }
+
+  function setOptions() {
+    options = [
+        { value: '1a', text: 'Option 1a' },
+        { value: '2a', text: 'Option 2a' },
+        { value: '3b', text: 'Option 3b' },
+        { value: '4b', text: 'Option 4b' }
+    ];
+  }
+
+  function setBoth() {
+    options = [
+        { value: '1a', text: 'Option 1a' },
+        { value: '2a', text: 'Option 2a' },
+        { value: '3b', text: 'Option 3b' },
+        { value: '4b', text: 'Option 4b' }
+    ];
+
+    values = ["1a","5b"]
+  }
+
+
+  function addToOptions() {
+    count++
+    console.log("Adding option ", count)
+    options.push({ value: count+"a", text: 'Option '+count+"a" })
+  }
+
+  function addToValues() {
+    count++
+    console.log("Adding value ", count+"a")
+    values.push(count+"a")
+  }
+
+
+  function setValues() {
+    values = ['1b', '5c'];
+  }
+
+  function changeConfig() {
+    config["create"] = true
+  }
+
+
+  function setConfig() {
+    config = {maxItems: 1}
+  }
+
+</script>
+
+<button @click={onBtnClick}> Add to Both </button>
+<button @click={addToOptions}> Add to Options </button>
+<button @click={addToValues}> Add to Values </button>
+
+<button @click={setOptions}> Set Options </button>
+
+
+
+<button @click={setValues}> Set Values</button>
+
+<button @click={setBoth}> Set Both</button>
+
+<button @click={changeConfig}> Change Config</button>
+<button @click={setConfig}> Set Config</button>
+
+
+
+<Selectize bind:values|deep={values1} bind:options|deep={options1} config|deep={config} />
+<Selectize bind:values|deep={values} bind:options|deep={options} config|deep={config} />
+
+<div> Selected values1 {JSON.stringify(values1)} </div>
+
+<div> Selected values {JSON.stringify(values)} </div>
+
+<div> Config {JSON.stringify(config)} </div>

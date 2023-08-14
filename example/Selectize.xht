@@ -1,0 +1,163 @@
+<script>
+  export let values 
+  export let options 
+  export let config = {}
+  let el 
+  let selectizeInstance
+  let callbackBypassSet = new Set();
+  let delimiter = ","
+
+  $: JSON.stringify(values) + " - " + JSON.stringify(options) , resetOptionsAndValues
+
+
+  function getMissingOptions() {
+    // !no-check
+    //returns option objects corresponding to values that are not currently available in options
+    let existingOptionValues = options.map(obj => obj['value']);
+    let existingOptionValueSet = new Set(existingOptionValues);
+    let missingOptions = []
+    values.forEach((val) => {
+      if (!existingOptionValueSet.has(val)){
+        let option = {'value': val, 'text':val+' (delete me)'}
+        missingOptions.push(option)
+      }
+    });
+    return missingOptions;
+
+  }
+
+
+  function resetOptionsAndValues() {
+    // !no-check
+    if (!selectizeInstance) return
+    console.log("checking if to execute resetOptionsAndValues")
+
+    if (callbackBypassSet.has('internalChange')) console.log("aborting")
+    if (callbackBypassSet.has('internalChange')) return
+
+    console.log("in resetOptionsAndValues")
+
+    console.log("options is", JSON.stringify(options))
+
+    let existingOptionValues = options.map(obj => obj['value']);
+    let existingOptionValueSet = new Set(existingOptionValues);
+    console.log("existingOptionValues", existingOptionValues)
+    selectizeInstance.clear(true);
+    
+
+    let selectizeOptions = options.map((option)=>{
+      return(_.clone(option))
+    })
+    let missingOptions = getMissingOptions()
+    missingOptions.forEach((option)=>{
+      selectizeOptions.push(option)
+    })
+
+    selectizeInstance.clearOptions(true);
+    selectizeInstance.clear(true);
+    selectizeInstance.addOption(selectizeOptions)
+    values.forEach((val) => {
+      selectizeInstance.addItem(val,true);
+    });
+
+  }
+  
+
+
+  function onSelectionChange() {
+    let newValues = []
+    let value = selectizeInstance.getValue()
+    if (!_.isNull(value) && value != ""){
+        newValues = value.split(delimiter)
+    }
+    values.length = 0;
+    //copy values from newValues to values
+    Array.prototype.push.apply(values, newValues);
+    console.log("on change values", values)
+    callbackBypassSet.add("internalChange");      
+    $tick().then(() => {
+      callbackBypassSet.delete("internalChange");
+    });  
+  }
+
+
+  function initSelectize() {
+    // !no-check
+    console.log("initSelectize options", options)
+    //callbackBypassSet.add("values");
+    //callbackBypassSet.add("options");
+    callbackBypassSet.add("internalChange");
+    //selectizeInstance.refreshItems();
+    $tick().then(() => {
+      //callbackBypassSet.delete("options");
+      //callbackBypassSet.delete("values");
+      callbackBypassSet.delete("internalChange");
+    });
+
+
+    if (config && config.delimiter) {
+      delimiter = config.delimiter
+    }
+
+
+    //do not pass options and values directly, as selectize is found to modify those
+    //instead pass a copy
+    let selectizeOptions = _.map(options,(option) => {
+      return _.clone(option)
+    })
+
+    let missingOptions = getMissingOptions()
+    missingOptions.forEach((option) => {
+      selectizeOptions.push(option)
+    })
+
+    let selectizeValues = _.clone(values)
+    
+    if (selectizeInstance) selectizeInstance.destroy();
+
+
+    let initConfig = {
+      options: selectizeOptions,
+      items: selectizeValues,
+      delimiter: delimiter,
+      create: false,
+      maxItems: null
+    }
+    _.extend(initConfig, config)
+
+    selectizeInstance = window.$(el).selectize(initConfig)[0].selectize;
+
+
+    selectizeInstance.on('change', onSelectionChange);
+
+  }
+
+
+  function onConfigUpdate(element,config, t) {
+    return {
+      update: () => {
+        console.log("in config update")
+        initSelectize()
+      }
+    }
+  }
+
+  $onMount(() => { 
+    initSelectize();
+  });
+
+  $onDestroy(() => {
+    if (selectizeInstance) selectizeInstance.destroy();
+  });
+
+// *onUpdate={values,options,config} 
+
+</script>
+
+
+
+<div  *onConfigUpdate={config}  {* el = $element} class="selectize-container">  </div>
+
+
+<style>
+</style>

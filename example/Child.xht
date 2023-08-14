@@ -1,0 +1,15 @@
+<script>
+export let childArray
+let count = 0
+function addToArray() {
+  console.log(childArray === window.parentArray);
+  childArray.push(count++)
+  console.log("childArray now- ", JSON.stringify(childArray))
+}
+
+
+</script>
+
+<button @click={addToArray}> Add to array inside child </button>
+
+<h3>childArray {JSON.stringify(childArray)}</h3>
